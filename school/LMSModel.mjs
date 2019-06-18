@@ -1,31 +1,43 @@
-
-
-// {
-//     "title": "string",
-//     "lessons": "number",
-//     "description": "string"
-//   }
-  
-  const history = new SubjectsModel({
-    title: 'History',
-    lessons: 24
-  });
-  
-  // will return subjectId
-  history.id
-  
-  const lms = new LMSModel();
-  await lms.remove(history);
-  await lms.add(history);
-  await lms.update(history);
-  
-  // will return true or false. Answer will be true if we added this subject to lms
-  await lms.verify(history);
-  
-  // will return array of registered subjects
-  await lms.readAll();
-  [
-    {
-      subjectId: null
-    }
-  ]
+export class LMSModel {
+  constructor() {
+    this._subjects = new Map();
+  }
+  add(subject) {
+    return new Promise((resolve, reject) => {
+      if (typeof subject == 'object') {
+        // const id = this.readAll()[0] && (parseInt(Array.from(this._subjects.keys()).reverse()[0]) + 1).toString() || '1';
+        this._subjects.set(id, subject);
+        resolve(id);
+      } else {
+        reject('Parameter isn\'t an object');
+      }
+    });
+  }
+  readAll(...args) {
+    return new Promise((resolve, reject) => {
+      if (args.length > 0) {
+        reject('ReadAll doesn\'t have any parameteres');
+      } else {
+        resolve(Array.from(this._subjects.values()));
+      }
+    });
+  }
+  remove(id) {
+    return new Promise((resolve, reject) => {
+      if (this._subjects.has(id)) {
+        resolve(this._subjects.delete(id));
+      } else {
+        reject('Subject with this id doesn\'t exist')
+      }
+    });
+  }
+  verify(id) {
+    return new Promise((resolve, reject) => {
+      if (this._subjects.has(id)) {
+        resolve(true);
+      } else {
+        reject(false);
+      }
+    });
+  }
+}
